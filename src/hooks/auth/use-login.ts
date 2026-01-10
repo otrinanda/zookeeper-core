@@ -21,7 +21,7 @@ export const useLogin = () => {
       // ATAU langsung { token: "..." }
       // Sesuaikan baris di bawah ini dengan struktur JSON response Anda:
       
-      const token = response.token; 
+      const token = response?.data.token ; 
       
       if (!token) {
         setErrorMessage("Login berhasil, tapi tidak menerima Token dari server.");
@@ -38,8 +38,8 @@ export const useLogin = () => {
 
         // ATAU: Jika endpoint profile masih error, gunakan dummy user TAPI dengan TOKEN ASLI
         const dummyUser = {
-          name: "Admin Real Token",
-          email: "admin@jagatsatwa.id",
+          name: "Admin Dummy Token",
+          email: "admindummy@jagatsatwa.id",
           role_user: [{ role_code: "admin", role_name: "Super Admin" }]
         };
         

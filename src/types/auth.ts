@@ -13,6 +13,10 @@ export interface User {
 }
 
 export interface LoginResponse {
-  token: string;
+  data:{
+    token: string;
+  }
+  message: string;
+  status: number;
   // Tambahkan field lain jika backend mereturn user info saat login
 }
