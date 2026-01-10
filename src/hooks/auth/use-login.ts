@@ -21,7 +21,7 @@ export const useLogin = () => {
       // ATAU langsung { token: "..." }
       // Sesuaikan baris di bawah ini dengan struktur JSON response Anda:
       
-      const token = response?.data?.token || response.token; 
+      const token = response.token; 
       
       if (!token) {
         setErrorMessage("Login berhasil, tapi tidak menerima Token dari server.");

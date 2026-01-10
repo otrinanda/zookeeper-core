@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { animalService } from "@/services/animal.service";
 import { columns } from "./_components/columns";
@@ -30,7 +30,7 @@ import { Input } from "@/components/ui/input";
 import { IconPlus, IconSearch } from "@tabler/icons-react";
 import Link from "next/link";
 
-export default function AnimalPage() {
+function AnimalPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [expanded, setExpanded] = useState<ExpandedState>({});
@@ -197,5 +197,27 @@ export default function AnimalPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function AnimalPage() {
+  return (
+    <Suspense fallback={
+      <div className="space-y-6">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div>
+            <h2 className="text-2xl font-bold tracking-tight">Manajemen Hewan</h2>
+            <p className="text-muted-foreground">
+              Data dikelompokkan berdasarkan Family dan Spesies.
+            </p>
+          </div>
+        </div>
+        <div className="rounded-md border bg-white shadow-sm p-24 text-center">
+          Memuat data...
+        </div>
+      </div>
+    }>
+      <AnimalPageContent />
+    </Suspense>
   );
 }
