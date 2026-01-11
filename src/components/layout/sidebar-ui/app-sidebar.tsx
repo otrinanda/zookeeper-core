@@ -4,13 +4,22 @@ import * as React from "react"
 import {
   IconLayoutDashboard,
   IconCat,
-  IconGridDots,
-  IconToolsKitchen2,
+  IconTransform,
+  IconFirstAidKit,
+  IconSkull,
+  IconHome,
+  IconMeat,
+  IconClipboardList,
+  IconPackage,
+  IconMapPin,
+  IconCircleDot,
+  IconDna,
+  IconApple,
   IconBuilding,
-  IconSettings,
-  IconChartPie,
-  IconMap,
-  IconUsers
+  IconCategory,
+  IconBuildingWarehouse,
+  IconPaw,
+  IconRuler,
 } from "@tabler/icons-react"
 
 import { NavMain } from "./nav-main"
@@ -24,6 +33,8 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 import { useAuthStore } from "@/store/use-auth-store"
+import { usePermissions } from "@/hooks/use-permissions"
+import { ROLE_CODES } from "@/lib/permissions"
 
 // Data Mockup untuk Unit (White Label)
 const teamsData = [
@@ -39,65 +50,374 @@ const teamsData = [
   },
 ]
 
+// Interface untuk menu item dengan permission
+interface MenuItem {
+  title: string
+  url: string
+  icon?: React.ComponentType<{ className?: string }>
+  isActive?: boolean
+  items?: { title: string; url: string; allowedRoles?: string[] }[]
+  allowedRoles?: string[]
+}
+
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user } = useAuthStore()
+  const { canAccessMenu } = usePermissions()
 
-  // Definisi Menu Navigasi ZooKeeper
-  const navMainData = [
+  // Definisi Menu Navigasi ZooKeeper dengan Role Permission
+  const allNavMainData: MenuItem[] = [
+    // ==================== DASHBOARD ====================
     {
       title: "Dashboard",
       url: "/dashboard",
       icon: IconLayoutDashboard,
-      isActive: true, // Default open
+      allowedRoles: [
+        ROLE_CODES.SUPER_ADMIN,
+        ROLE_CODES.DIRECTOR_UTAMA,
+        ROLE_CODES.DIRECTOR_OPS,
+        ROLE_CODES.MANAGER,
+        ROLE_CODES.KURATOR,
+        ROLE_CODES.HEAD_KEEPER,
+        ROLE_CODES.KEEPER,
+        ROLE_CODES.KESEHATAN,
+        ROLE_CODES.ANIMAL_REGISTER,
+        ROLE_CODES.STORE_MASTER,
+        ROLE_CODES.VIEW,
+      ],
     },
+
+    // ==================== MODUL SATWA ====================
     {
-      title: "Manajemen Hewan",
-      url: "#", // Parent tidak punya link langsung jika punya child
+      title: "Manajemen Satwa",
+      url: "#",
       icon: IconCat,
       items: [
-        { title: "Daftar Hewan", url: "/animal" },
-        { title: "Kategori & Spesies", url: "/animal/species" },
-        { title: "Mutasi / Perpindahan", url: "/animal/mutation" },
+        { 
+          title: "Satwa Hidup", 
+          url: "/animal",
+          allowedRoles: [
+            ROLE_CODES.ANIMAL_REGISTER,
+            ROLE_CODES.DIRECTOR_OPS,
+            ROLE_CODES.DIRECTOR_UTAMA,
+            ROLE_CODES.HEAD_KEEPER,
+            ROLE_CODES.KESEHATAN,
+            ROLE_CODES.KURATOR,
+            ROLE_CODES.MANAGER,
+            ROLE_CODES.SUPER_ADMIN,
+            ROLE_CODES.VIEW,
+          ]
+        },
+        { 
+          title: "Mutasi Satwa", 
+          url: "/mutation",
+          allowedRoles: [
+            ROLE_CODES.ANIMAL_REGISTER,
+            ROLE_CODES.DIRECTOR_OPS,
+            ROLE_CODES.DIRECTOR_UTAMA,
+            ROLE_CODES.HEAD_KEEPER,
+            ROLE_CODES.KESEHATAN,
+            ROLE_CODES.KURATOR,
+            ROLE_CODES.MANAGER,
+            ROLE_CODES.SUPER_ADMIN,
+            ROLE_CODES.VIEW,
+          ]
+        },
+        { 
+          title: "Satwa Sakit", 
+          url: "/sick",
+          allowedRoles: [
+            ROLE_CODES.ANIMAL_REGISTER,
+            ROLE_CODES.DIRECTOR_OPS,
+            ROLE_CODES.DIRECTOR_UTAMA,
+            ROLE_CODES.HEAD_KEEPER,
+            ROLE_CODES.KESEHATAN,
+            ROLE_CODES.KURATOR,
+            ROLE_CODES.MANAGER,
+            ROLE_CODES.SUPER_ADMIN,
+            ROLE_CODES.VIEW,
+          ]
+        },
+        { 
+          title: "Satwa Mati", 
+          url: "/dead",
+          allowedRoles: [
+            ROLE_CODES.ANIMAL_REGISTER,
+            ROLE_CODES.DIRECTOR_OPS,
+            ROLE_CODES.DIRECTOR_UTAMA,
+            ROLE_CODES.HEAD_KEEPER,
+            ROLE_CODES.KESEHATAN,
+            ROLE_CODES.KURATOR,
+            ROLE_CODES.MANAGER,
+            ROLE_CODES.SUPER_ADMIN,
+            ROLE_CODES.VIEW,
+          ]
+        },
       ],
     },
+    
+    // ==================== KANDANG ====================
     {
-      title: "Area & Kandang",
-      url: "#",
-      icon: IconGridDots,
-      items: [
-        { title: "Daftar Kandang", url: "/cage" },
-        { title: "Peta Area", url: "/area" },
+      title: "Kandang",
+      url: "/cage",
+      icon: IconHome,
+      allowedRoles: [
+        ROLE_CODES.DIRECTOR_OPS,
+        ROLE_CODES.DIRECTOR_UTAMA,
+        ROLE_CODES.HEAD_KEEPER,
+        ROLE_CODES.KESEHATAN,
+        ROLE_CODES.KURATOR,
+        ROLE_CODES.MANAGER,
+        ROLE_CODES.SUPER_ADMIN,
+        ROLE_CODES.VIEW,
       ],
     },
+    
+    // ==================== PAKAN ====================
     {
-      title: "Pakan & Logistik",
+      title: "Pakan",
+      url: "/feed",
+      icon: IconMeat,
+      allowedRoles: [
+        ROLE_CODES.DIRECTOR_OPS,
+        ROLE_CODES.DIRECTOR_UTAMA,
+        ROLE_CODES.HEAD_KEEPER,
+        ROLE_CODES.KEEPER,
+        ROLE_CODES.KESEHATAN,
+        ROLE_CODES.KURATOR,
+        ROLE_CODES.MANAGER,
+        ROLE_CODES.SUPER_ADMIN,
+        ROLE_CODES.VIEW,
+      ],
+    },
+    
+    // ==================== TUGAS KEEPER ====================
+    {
+      title: "Tugas Keeper",
+      url: "/task",
+      icon: IconClipboardList,
+      allowedRoles: [
+        ROLE_CODES.DIRECTOR_OPS,
+        ROLE_CODES.DIRECTOR_UTAMA,
+        ROLE_CODES.HEAD_KEEPER,
+        ROLE_CODES.KEEPER,
+        ROLE_CODES.KURATOR,
+        ROLE_CODES.MANAGER,
+        ROLE_CODES.SUPER_ADMIN,
+        ROLE_CODES.VIEW,
+      ],
+    },
+    
+    // ==================== INVENTARIS ====================
+    {
+      title: "Stok Barang",
+      url: "/stock",
+      icon: IconPackage,
+      allowedRoles: [
+        ROLE_CODES.DIRECTOR_OPS,
+        ROLE_CODES.DIRECTOR_UTAMA,
+        ROLE_CODES.MANAGER,
+        ROLE_CODES.STORE_MASTER,
+        ROLE_CODES.SUPER_ADMIN,
+        ROLE_CODES.VIEW,
+      ],
+    },
+    
+    // ==================== MASTER DATA ====================
+    {
+      title: "Master Data",
       url: "#",
-      icon: IconToolsKitchen2,
+      icon: IconLayoutDashboard,
       items: [
-        { title: "Stok Pakan", url: "/feed" },
-        { title: "Jadwal Pemberian", url: "/feed/schedule" },
+        { 
+          title: "Area Unit", 
+          url: "/unit-area",
+          allowedRoles: [
+            ROLE_CODES.ANIMAL_REGISTER,
+            ROLE_CODES.DIRECTOR_OPS,
+            ROLE_CODES.DIRECTOR_UTAMA,
+            ROLE_CODES.HEAD_KEEPER,
+            ROLE_CODES.KESEHATAN,
+            ROLE_CODES.KURATOR,
+            ROLE_CODES.MANAGER,
+            ROLE_CODES.SUPER_ADMIN,
+            ROLE_CODES.VIEW,
+          ]
+        },
+        { 
+          title: "Area Zona", 
+          url: "/zone-area",
+          allowedRoles: [
+            ROLE_CODES.ANIMAL_REGISTER,
+            ROLE_CODES.DIRECTOR_OPS,
+            ROLE_CODES.DIRECTOR_UTAMA,
+            ROLE_CODES.HEAD_KEEPER,
+            ROLE_CODES.KESEHATAN,
+            ROLE_CODES.KURATOR,
+            ROLE_CODES.MANAGER,
+            ROLE_CODES.SUPER_ADMIN,
+            ROLE_CODES.VIEW,
+          ]
+        },
+        { 
+          title: "Family", 
+          url: "/family",
+          allowedRoles: [
+            ROLE_CODES.ANIMAL_REGISTER,
+            ROLE_CODES.DIRECTOR_OPS,
+            ROLE_CODES.DIRECTOR_UTAMA,
+            ROLE_CODES.HEAD_KEEPER,
+            ROLE_CODES.KESEHATAN,
+            ROLE_CODES.KURATOR,
+            ROLE_CODES.MANAGER,
+            ROLE_CODES.SUPER_ADMIN,
+            ROLE_CODES.VIEW,
+          ]
+        },
+        { 
+          title: "Kategori Pakan", 
+          url: "/feed-category",
+          allowedRoles: [
+            ROLE_CODES.ANIMAL_REGISTER,
+            ROLE_CODES.DIRECTOR_OPS,
+            ROLE_CODES.DIRECTOR_UTAMA,
+            ROLE_CODES.HEAD_KEEPER,
+            ROLE_CODES.KESEHATAN,
+            ROLE_CODES.KURATOR,
+            ROLE_CODES.MANAGER,
+            ROLE_CODES.SUPER_ADMIN,
+            ROLE_CODES.VIEW,
+          ]
+        },
+        { 
+          title: "Jenis Kandang", 
+          url: "/cage-model",
+          allowedRoles: [
+            ROLE_CODES.ANIMAL_REGISTER,
+            ROLE_CODES.DIRECTOR_OPS,
+            ROLE_CODES.DIRECTOR_UTAMA,
+            ROLE_CODES.HEAD_KEEPER,
+            ROLE_CODES.KESEHATAN,
+            ROLE_CODES.KURATOR,
+            ROLE_CODES.MANAGER,
+            ROLE_CODES.SUPER_ADMIN,
+            ROLE_CODES.VIEW,
+          ]
+        },
+        { 
+          title: "Tipe Kandang", 
+          url: "/cage-type",
+          allowedRoles: [
+            ROLE_CODES.ANIMAL_REGISTER,
+            ROLE_CODES.DIRECTOR_OPS,
+            ROLE_CODES.DIRECTOR_UTAMA,
+            ROLE_CODES.HEAD_KEEPER,
+            ROLE_CODES.KESEHATAN,
+            ROLE_CODES.KURATOR,
+            ROLE_CODES.MANAGER,
+            ROLE_CODES.SUPER_ADMIN,
+            ROLE_CODES.VIEW,
+          ]
+        },
+        { 
+          title: "Jenis Pakan", 
+          url: "/feed-type",
+          allowedRoles: [
+            ROLE_CODES.ANIMAL_REGISTER,
+            ROLE_CODES.DIRECTOR_OPS,
+            ROLE_CODES.DIRECTOR_UTAMA,
+            ROLE_CODES.HEAD_KEEPER,
+            ROLE_CODES.KESEHATAN,
+            ROLE_CODES.KURATOR,
+            ROLE_CODES.MANAGER,
+            ROLE_CODES.SUPER_ADMIN,
+            ROLE_CODES.VIEW,
+          ]
+        },
+        { 
+          title: "Mix Pakan", 
+          url: "/mix-feed",
+          allowedRoles: [
+            ROLE_CODES.ANIMAL_REGISTER,
+            ROLE_CODES.DIRECTOR_OPS,
+            ROLE_CODES.DIRECTOR_UTAMA,
+            ROLE_CODES.HEAD_KEEPER,
+            ROLE_CODES.KESEHATAN,
+            ROLE_CODES.KURATOR,
+            ROLE_CODES.MANAGER,
+            ROLE_CODES.SUPER_ADMIN,
+            ROLE_CODES.VIEW,
+          ]
+        },
+        { 
+          title: "Spesies", 
+          url: "/species",
+          allowedRoles: [
+            ROLE_CODES.ANIMAL_REGISTER,
+            ROLE_CODES.DIRECTOR_OPS,
+            ROLE_CODES.DIRECTOR_UTAMA,
+            ROLE_CODES.HEAD_KEEPER,
+            ROLE_CODES.KESEHATAN,
+            ROLE_CODES.KURATOR,
+            ROLE_CODES.MANAGER,
+            ROLE_CODES.SUPER_ADMIN,
+            ROLE_CODES.VIEW,
+          ]
+        },
+        { 
+          title: "Satuan", 
+          url: "/unit",
+          allowedRoles: [
+            ROLE_CODES.ANIMAL_REGISTER,
+            ROLE_CODES.DIRECTOR_OPS,
+            ROLE_CODES.DIRECTOR_UTAMA,
+            ROLE_CODES.HEAD_KEEPER,
+            ROLE_CODES.KESEHATAN,
+            ROLE_CODES.KURATOR,
+            ROLE_CODES.MANAGER,
+            ROLE_CODES.SUPER_ADMIN,
+            ROLE_CODES.VIEW,
+          ]
+        },
       ],
     },
   ]
 
-  // Menu Sekunder (misal untuk Admin)
-  const navSecondaryData = [
-     {
-        title: "Staff & Users",
-        url: "/users",
-        icon: IconUsers,
-     },
-     {
-        title: "Laporan",
-        url: "/reports",
-        icon: IconChartPie,
-     },
-     {
-        title: "Pengaturan",
-        url: "/settings",
-        icon: IconSettings,
-     }
-  ]
+  // Filter menu berdasarkan permission user
+  const filterMenuByPermission = (menuItems: MenuItem[]): MenuItem[] => {
+    return menuItems
+      .map((menu) => {
+        // Jika menu punya children, filter children-nya
+        if (menu.items) {
+          const filteredChildren = menu.items.filter((child) => {
+            // Jika tidak ada allowedRoles, berarti semua bisa akses
+            if (!child.allowedRoles || child.allowedRoles.length === 0) {
+              return true
+            }
+            return canAccessMenu(child.url)
+          })
+
+          // Jika setelah filter tidak ada children yang tersisa, hide parent
+          if (filteredChildren.length === 0) {
+            return null
+          }
+
+          return {
+            ...menu,
+            items: filteredChildren,
+          }
+        }
+
+        // Menu tanpa children
+        if (!menu.allowedRoles || menu.allowedRoles.length === 0) {
+          return menu
+        }
+
+        return canAccessMenu(menu.url) ? menu : null
+      })
+      .filter((menu): menu is MenuItem => menu !== null)
+  }
+
+  const navMainData = filterMenuByPermission(allNavMainData)
 
   return (
     <Sidebar collapsible="icon" {...props}>
@@ -108,9 +428,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent>
         {/* Menu Utama */}
         <NavMain items={navMainData} />
-        
-        {/* Menu Sekunder (bisa pakai NavMain juga atau buat NavProjects terpisah) */}
-        <NavMain items={navSecondaryData} /> 
       </SidebarContent>
 
       <SidebarFooter>

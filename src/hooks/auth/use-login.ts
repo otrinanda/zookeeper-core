@@ -3,7 +3,8 @@ import { authService } from "@/services/auth.services";
 import { useAuthStore } from "@/store/use-auth-store";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import Cookies from "js-cookie"; // Import Cookies
+import Cookies from "js-cookie";
+import { getDefaultLandingPage } from "@/lib/permissions";
 
 export const useLogin = () => {
   const router = useRouter();
@@ -13,13 +14,10 @@ export const useLogin = () => {
   const mutation = useMutation({
     mutationFn: authService.login,
     onSuccess: async (response) => {
-      // DEBUG: Cek apakah token benar-benar ada di response backend
-      console.log("Login Response:", response); 
-
-      // Asumsi response backend bentuknya: 
-      // { status: 200, message: "...", data: { token: "...", user: ... } } 
-      // ATAU langsung { token: "..." }
-      // Sesuaikan baris di bawah ini dengan struktur JSON response Anda:
+      // ============================================================
+      // STEP 1: Login berhasil - Dapat TOKEN saja (tanpa user data)
+      // ============================================================
+      console.log("✅ Login successful, token received");
       
       const token = response?.data.token ; 
       
@@ -28,34 +26,56 @@ export const useLogin = () => {
         return;
       }
 
-      // 1. Simpan Token ke Cookie (PENTING untuk Axios Interceptor)
-      Cookies.set("accessToken", token, { expires: 1 }); // 1 hari
+      // STEP 2: Simpan Token ke Cookie (untuk Axios Interceptor)
+      Cookies.set("accessToken", token, { expires: 1 });
+      console.log("💾 Token saved to cookie");
 
       try {
-        // 2. Coba ambil profile asli (Uncomment ini jika endpoint profile sudah fixed)
-        // const userProfile = await authService.getProfile();
-        // login(userProfile, token);
-
-        // ATAU: Jika endpoint profile masih error, gunakan dummy user TAPI dengan TOKEN ASLI
-        const dummyUser = {
-          name: "Admin Dummy Token",
-          email: "admindummy@jagatsatwa.id",
-          role_user: [{ role_code: "admin", role_name: "Super Admin" }]
-        };
+        // ============================================================
+        // STEP 3: Ambil User Profile (DATA USER + ROLES dari sini!)
+        // ============================================================
+        console.log("📡 Fetching user profile from /user/profile...");
+        const userProfile = await authService.getProfile();
         
-        // Simpan ke Zustand Store
-        login(dummyUser as any, token);
+        // DEBUG: Log user profile untuk verifikasi
+        console.log("✅ User Profile Retrieved from /user/profile:");
+        console.log("📧 Email:", userProfile.email);
+        console.log("👤 Name:", userProfile.name);
+        console.log("🎭 Main Roles:", userProfile.role_user?.map(r => ({
+          code: r.role_code,
+          name: r.role_name
+        })));
+        if (userProfile.sub_role_user && userProfile.sub_role_user.length > 0) {
+          console.log("🎭 Sub Roles:", userProfile.sub_role_user?.map(r => ({
+            code: r.role_code,
+            name: r.role_name
+          })));
+        }
+        console.log("🏢 Unit IDs:", userProfile.unit_ids);
         
-        router.push("/dashboard");
+        // STEP 4: Save user data to Zustand Store
+        login(userProfile, token);
+        
+        // STEP 5: Get default landing page based on user's first role
+        const userRole = userProfile.role_user?.[0]?.role_code || '';
+        const landingPage = getDefaultLandingPage(userRole);
+        
+        console.log("🚀 Redirecting to:", landingPage);
+        
+        router.push(landingPage);
       } catch (err) {
-        console.error("Profile Error:", err);
+        console.error("❌ Profile Error:", err);
+        console.error("Failed to fetch user profile from /user/profile");
         // Tetap login meski gagal ambil profile, asalkan token ada
-        router.push("/dashboard");
+        router.push("/animal"); // Default fallback
       }
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       console.error("Login Error:", error);
-      const msg = error.response?.data?.message || "Email atau password salah.";
+      const msg = 
+        error && typeof error === 'object' && 'response' in error
+          ? (error as { response?: { data?: { message?: string } } }).response?.data?.message ?? "Email atau password salah."
+          : "Email atau password salah.";
       setErrorMessage(msg);
     },
   });

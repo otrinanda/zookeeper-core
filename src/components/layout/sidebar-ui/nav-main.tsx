@@ -38,25 +38,24 @@ export function NavMain({
       <SidebarGroupLabel>Menu Utama</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => (
-          <Collapsible
-            key={item.title}
-            asChild
-            defaultOpen={item.isActive}
-            className="group/collapsible"
-          >
-            <SidebarMenuItem>
-              <CollapsibleTrigger asChild>
-                <SidebarMenuButton tooltip={item.title}>
-                  {item.icon && <item.icon />}
-                  <span className="">{item.title}</span>
-                  {item.items?.length ? (
-                     <IconChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                  ) : null}
-                </SidebarMenuButton>
-              </CollapsibleTrigger>
-              
-              {/* Jika punya sub-menu, render disini */}
-              {item.items?.length ? (
+          // Jika menu punya sub-items, render sebagai Collapsible
+          // Jika tidak, render sebagai Link biasa
+          item.items?.length ? (
+            <Collapsible
+              key={item.title}
+              asChild
+              defaultOpen={item.isActive}
+              className="group/collapsible"
+            >
+              <SidebarMenuItem>
+                <CollapsibleTrigger asChild>
+                  <SidebarMenuButton tooltip={item.title}>
+                    {item.icon && <item.icon />}
+                    <span className="">{item.title}</span>
+                    <IconChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                  </SidebarMenuButton>
+                </CollapsibleTrigger>
+                
                 <CollapsibleContent>
                   <SidebarMenuSub>
                     {item.items.map((subItem) => (
@@ -70,9 +69,19 @@ export function NavMain({
                     ))}
                   </SidebarMenuSub>
                 </CollapsibleContent>
-              ) : null}
+              </SidebarMenuItem>
+            </Collapsible>
+          ) : (
+            // Menu tanpa sub-items: render sebagai link langsung
+            <SidebarMenuItem key={item.title}>
+              <SidebarMenuButton asChild tooltip={item.title}>
+                <Link href={item.url}>
+                  {item.icon && <item.icon />}
+                  <span>{item.title}</span>
+                </Link>
+              </SidebarMenuButton>
             </SidebarMenuItem>
-          </Collapsible>
+          )
         ))}
       </SidebarMenu>
     </SidebarGroup>

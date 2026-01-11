@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState, Suspense, Fragment } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { animalService } from "@/services/animal.service";
 import { columns } from "./_components/columns";
@@ -29,6 +29,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { IconPlus, IconSearch } from "@tabler/icons-react";
 import Link from "next/link";
+import { Can } from "@/components/shared/can";
+import { ROLE_CODES } from "@/lib/permissions";
 
 function AnimalPageContent() {
   const router = useRouter();
@@ -116,11 +118,22 @@ function AnimalPageContent() {
             onBlur={() => handleSearch(searchTerm)}
           />
         </div>
-        <Button asChild className="bg-emerald-600 hover:bg-emerald-700">
-          <Link href="/animal/create">
-            <IconPlus className="mr-2 h-4 w-4" /> Tambah Hewan
-          </Link>
-        </Button>
+        
+        {/* Only admin, manager, and certain roles can add new animal */}
+        <Can roles={[
+          ROLE_CODES.SUPER_ADMIN, 
+          ROLE_CODES.DIRECTOR_UTAMA,
+          ROLE_CODES.DIRECTOR_OPS,
+          ROLE_CODES.MANAGER,
+          ROLE_CODES.KURATOR,
+          ROLE_CODES.HEAD_KEEPER,
+        ]}>
+          <Button asChild className="bg-emerald-600 hover:bg-emerald-700">
+            <Link href="/animal/create">
+              <IconPlus className="mr-2 h-4 w-4" /> Tambah Hewan
+            </Link>
+          </Button>
+        </Can>
       </div>
 
       <div className="rounded-md border bg-white shadow-sm overflow-hidden">
@@ -156,8 +169,8 @@ function AnimalPageContent() {
               </TableRow>
             ) : (
               table.getRowModel().rows.map((row) => (
-                <>
-                  <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
+                <Fragment key={row.id}>
+                  <TableRow data-state={row.getIsSelected() && "selected"}>
                     {row.getVisibleCells().map((cell) => (
                       <TableCell key={cell.id}>
                         {flexRender(
@@ -169,7 +182,7 @@ function AnimalPageContent() {
                   </TableRow>
 
                   {row.getIsExpanded() && (
-                    <TableRow  key={`${row.id}-expanded`}>
+                    <TableRow>
                       <TableCell colSpan={columns.length} className="p-0 bg-slate-50">
                         {/* ID row parent tetap aman */}
                         <AnimalSubList 
@@ -179,7 +192,7 @@ function AnimalPageContent() {
                       </TableCell>
                     </TableRow>
                   )}
-                </>
+                </Fragment>
               ))
             )}
           </TableBody>
