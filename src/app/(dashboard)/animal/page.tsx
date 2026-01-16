@@ -3,12 +3,12 @@
 import { useState, Suspense, Fragment } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { animalService } from "@/services/animal.service";
-import { columns } from "./_components/columns";
+import { FamilyTableColumns } from "./_components/columns";
 import { AnimalSubList } from "./_components/animal-sub-list";
-import { PaginationControl } from "@/components/shared/pagination-control"; // Import komponen baru
-
+import { PaginationControl } from "@/components/shared/pagination-control";
+import { PageBreadcrumb } from "@/components/shared/page-breadcrumb";
 // Import hooks untuk URL Params
-import { useRouter, useSearchParams } from "next/navigation"; 
+import { useRouter, useSearchParams } from "next/navigation";
 
 import {
   useReactTable,
@@ -54,7 +54,7 @@ function AnimalPageContent() {
 
   const table = useReactTable({
     data: tableData,
-    columns,
+    columns: FamilyTableColumns,
     state: { expanded },
     onExpandedChange: setExpanded,
     getCoreRowModel: getCoreRowModel(),
@@ -68,7 +68,7 @@ function AnimalPageContent() {
     params.set("page", newPage.toString());
     // Pertahankan keyword jika ada
     if (keyword) params.set("keyword", keyword);
-    
+
     router.push(`?${params.toString()}`);
   };
 
@@ -88,11 +88,7 @@ function AnimalPageContent() {
   const [searchTerm, setSearchTerm] = useState(keyword);
 
   return (
-    <div className="space-y-6">
-      {/* <div className="flex justify-between w-full">
-        <div className="bg-amber-500 w-10">a</div>
-        <div className="bg-amber-600 w-10">b</div>
-      </div> */}
+    <div className="space-y-6 bg-card p-6 rounded-md border border-border shadow-sm">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h2 className="text-2xl font-bold tracking-tight">Manajemen Hewan</h2>
@@ -100,16 +96,14 @@ function AnimalPageContent() {
             Data dikelompokkan berdasarkan Family dan Spesies.
           </p>
         </div>
-
       </div>
 
       <div className="flex items-center justify-between gap-2">
-        
         <div className="relative ">
           <IconSearch className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Cari family, spesies..."
-            className="pl-9 bg-white w-100"
+            className="pl-9 w-100"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             // Eksekusi search saat Enter ditekan
@@ -118,17 +112,19 @@ function AnimalPageContent() {
             onBlur={() => handleSearch(searchTerm)}
           />
         </div>
-        
+
         {/* Only admin, manager, and certain roles can add new animal */}
-        <Can roles={[
-          ROLE_CODES.SUPER_ADMIN, 
-          ROLE_CODES.DIRECTOR_UTAMA,
-          ROLE_CODES.DIRECTOR_OPS,
-          ROLE_CODES.MANAGER,
-          ROLE_CODES.KURATOR,
-          ROLE_CODES.HEAD_KEEPER,
-        ]}>
-          <Button asChild className="bg-emerald-600 hover:bg-emerald-700">
+        <Can
+          roles={[
+            ROLE_CODES.SUPER_ADMIN,
+            ROLE_CODES.DIRECTOR_UTAMA,
+            ROLE_CODES.DIRECTOR_OPS,
+            ROLE_CODES.MANAGER,
+            ROLE_CODES.KURATOR,
+            ROLE_CODES.HEAD_KEEPER,
+          ]}
+        >
+          <Button asChild className="bg-primary hover:bg-primary/80">
             <Link href="/animal/create">
               <IconPlus className="mr-2 h-4 w-4" /> Tambah Hewan
             </Link>
@@ -136,7 +132,7 @@ function AnimalPageContent() {
         </Can>
       </div>
 
-      <div className="rounded-md border bg-white shadow-sm overflow-hidden">
+      <div className="rounded-md border border-border bg-background shadow-sm overflow-hidden">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -147,7 +143,7 @@ function AnimalPageContent() {
                       ? null
                       : flexRender(
                           header.column.columnDef.header,
-                          header.getContext()
+                          header.getContext(),
                         )}
                   </TableHead>
                 ))}
@@ -157,13 +153,19 @@ function AnimalPageContent() {
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
+                <TableCell
+                  colSpan={FamilyTableColumns.length}
+                  className="h-24 text-center"
+                >
                   Memuat data...
                 </TableCell>
               </TableRow>
             ) : tableData.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
+                <TableCell
+                  colSpan={FamilyTableColumns.length}
+                  className="h-24 text-center"
+                >
                   Tidak ada data ditemukan.
                 </TableCell>
               </TableRow>
@@ -175,7 +177,7 @@ function AnimalPageContent() {
                       <TableCell key={cell.id}>
                         {flexRender(
                           cell.column.columnDef.cell,
-                          cell.getContext()
+                          cell.getContext(),
                         )}
                       </TableCell>
                     ))}
@@ -183,11 +185,14 @@ function AnimalPageContent() {
 
                   {row.getIsExpanded() && (
                     <TableRow>
-                      <TableCell colSpan={columns.length} className="p-0 bg-slate-50">
+                      <TableCell
+                        colSpan={FamilyTableColumns.length}
+                        className="p-0 bg-background"
+                      >
                         {/* ID row parent tetap aman */}
-                        <AnimalSubList 
-                            familyId={row.original.id} 
-                            familyName={row.original.family_name} 
+                        <AnimalSubList
+                          familyId={row.original.id}
+                          familyName={row.original.family_name}
                         />
                       </TableCell>
                     </TableRow>
@@ -200,8 +205,8 @@ function AnimalPageContent() {
 
         {/* 5. PASANG PAGINATION CONTROL TABEL UTAMA */}
         {/* Disini kita pass handlePageChange yang mengupdate URL */}
-        <div className="p-4 border-t">
-          <PaginationControl 
+        <div className="p-4 border-t border-border">
+          <PaginationControl
             currentPage={page}
             totalPages={meta ? Math.ceil(meta.total / limit) : 1}
             onPageChange={handlePageChange}
@@ -214,22 +219,31 @@ function AnimalPageContent() {
 }
 
 export default function AnimalPage() {
+  const breadcrumbItems = [
+    { label: "Dashboard", href: "/dashboard" },
+    { label: "Data Hewan", href: "/dashboard/animal" },
+  ];
   return (
-    <Suspense fallback={
-      <div className="space-y-6">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-          <div>
-            <h2 className="text-2xl font-bold tracking-tight">Manajemen Hewan</h2>
-            <p className="text-muted-foreground">
-              Data dikelompokkan berdasarkan Family dan Spesies.
-            </p>
+    <Suspense
+      fallback={
+        <div className="space-y-6">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+              <h2 className="text-2xl font-bold tracking-tight">
+                Manajemen Hewan
+              </h2>
+              <p className="text-muted-foreground">
+                Data dikelompokkan berdasarkan Family dan Spesies.
+              </p>
+            </div>
+          </div>
+          <div className="rounded-md border border-border bg-background shadow-sm p-24 text-center">
+            Memuat data...
           </div>
         </div>
-        <div className="rounded-md border bg-white shadow-sm p-24 text-center">
-          Memuat data...
-        </div>
-      </div>
-    }>
+      }
+    >
+      <PageBreadcrumb items={breadcrumbItems} />
       <AnimalPageContent />
     </Suspense>
   );

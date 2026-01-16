@@ -3,10 +3,14 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { AnimalHeader } from "@/services/animal.service"; // Pastikan type ini ada
 import { Button } from "@/components/ui/button";
-import { IconChevronRight, IconChevronDown, IconExternalLink } from "@tabler/icons-react";
+import {
+  IconChevronRight,
+  IconChevronDown,
+  IconExternalLink,
+} from "@tabler/icons-react";
 import Link from "next/link";
 
-export const columns: ColumnDef<AnimalHeader>[] = [
+export const FamilyTableColumns: ColumnDef<AnimalHeader>[] = [
   {
     id: "expander",
     header: () => null,
@@ -35,7 +39,9 @@ export const columns: ColumnDef<AnimalHeader>[] = [
   {
     accessorKey: "family_name",
     header: "Family",
-    cell: ({ row }) => <span className="font-semibold">{row.getValue("family_name")}</span>,
+    cell: ({ row }) => (
+      <span className="font-semibold">{row.getValue("family_name")}</span>
+    ),
   },
   {
     accessorKey: "species_name",
@@ -59,22 +65,27 @@ export const columns: ColumnDef<AnimalHeader>[] = [
     header: "Total Satwa",
     cell: ({ row }) => (
       <div className="flex items-center gap-2">
-        <span className="font-bold text-emerald-600">{row.getValue("total")}</span>
+        <span className="font-bold">{row.getValue("total")}</span>
         <span className="text-xs text-slate-400">ekor</span>
       </div>
     ),
   },
 
-    {
+  {
     accessorKey: "id",
     header: "action",
-    cell: ({ row }) =>  (
-    // <span className="font-semibold">{row.getValue("id")}</span>,
-    <Button variant="link" size="sm" asChild className="text-emerald-600 h-auto p-0">
+    cell: ({ row }) => (
+      // <span className="font-semibold">{row.getValue("id")}</span>,
+      <Button
+        variant="link"
+        size="sm"
+        asChild
+        className="text-secondary h-auto p-0"
+      >
         <Link href={`/animal/family/${row.getValue("id")}`}>
-            <IconExternalLink size={14} className="ml-1" />
+          <IconExternalLink size={14} className="ml-1" />
         </Link>
       </Button>
-    )
+    ),
   },
 ];
