@@ -141,6 +141,8 @@ export function AnimalSubList({ familyId, familyName }: AnimalSubListProps) {
         currentPage={page}
         totalPages={meta?.total_pages || 1} // Pastikan backend kirim total_pages, atau hitung Math.ceil(meta.total / limit)
         onPageChange={(newPage) => setPage(newPage)}
+        itemsPerPage={limit}
+        totalItems={meta?.total || 0}
       />
     </div>
   );

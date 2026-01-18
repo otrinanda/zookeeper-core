@@ -1,40 +1,29 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 import {
   IconLayoutDashboard,
   IconCat,
-  IconTransform,
-  IconFirstAidKit,
-  IconSkull,
   IconHome,
   IconMeat,
   IconClipboardList,
   IconPackage,
-  IconMapPin,
-  IconCircleDot,
-  IconDna,
-  IconApple,
   IconBuilding,
-  IconCategory,
-  IconBuildingWarehouse,
-  IconPaw,
-  IconRuler,
-} from "@tabler/icons-react"
+} from "@tabler/icons-react";
 
-import { NavMain } from "./nav-main"
-import { NavUser } from "./nav-user"
-import { TeamSwitcher } from "./team-switcher"
+import { NavMain } from "./nav-main";
+import { NavUser } from "./nav-user";
+import { TeamSwitcher } from "./team-switcher";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
-} from "@/components/ui/sidebar"
-import { useAuthStore } from "@/store/use-auth-store"
-import { usePermissions } from "@/hooks/use-permissions"
-import { ROLE_CODES } from "@/lib/permissions"
+} from "@/components/ui/sidebar";
+import { useAuthStore } from "@/store/use-auth-store";
+import { usePermissions } from "@/hooks/use-permissions";
+import { ROLE_CODES } from "@/lib/permissions";
 
 // Data Mockup untuk Unit (White Label)
 const teamsData = [
@@ -48,21 +37,21 @@ const teamsData = [
     logo: IconBuilding,
     plan: "Basic",
   },
-]
+];
 
 // Interface untuk menu item dengan permission
 interface MenuItem {
-  title: string
-  url: string
-  icon?: React.ComponentType<{ className?: string }>
-  isActive?: boolean
-  items?: { title: string; url: string; allowedRoles?: string[] }[]
-  allowedRoles?: string[]
+  title: string;
+  url: string;
+  icon?: React.ComponentType<{ className?: string }>;
+  isActive?: boolean;
+  items?: { title: string; url: string; allowedRoles?: string[] }[];
+  allowedRoles?: string[];
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { user } = useAuthStore()
-  const { canAccessMenu } = usePermissions()
+  const { user } = useAuthStore();
+  const { canAccessMenu } = usePermissions();
 
   // Definisi Menu Navigasi ZooKeeper dengan Role Permission
   const allNavMainData: MenuItem[] = [
@@ -92,8 +81,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       url: "#",
       icon: IconCat,
       items: [
-        { 
-          title: "Satwa Hidup", 
+        {
+          title: "Satwa Hidup",
           url: "/animal",
           allowedRoles: [
             ROLE_CODES.ANIMAL_REGISTER,
@@ -105,10 +94,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             ROLE_CODES.MANAGER,
             ROLE_CODES.SUPER_ADMIN,
             ROLE_CODES.VIEW,
-          ]
+          ],
         },
-        { 
-          title: "Mutasi Satwa", 
+        {
+          title: "Mutasi Satwa",
           url: "/mutation",
           allowedRoles: [
             ROLE_CODES.ANIMAL_REGISTER,
@@ -120,10 +109,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             ROLE_CODES.MANAGER,
             ROLE_CODES.SUPER_ADMIN,
             ROLE_CODES.VIEW,
-          ]
+          ],
         },
-        { 
-          title: "Satwa Sakit", 
+        {
+          title: "Satwa Sakit",
           url: "/sick",
           allowedRoles: [
             ROLE_CODES.ANIMAL_REGISTER,
@@ -135,10 +124,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             ROLE_CODES.MANAGER,
             ROLE_CODES.SUPER_ADMIN,
             ROLE_CODES.VIEW,
-          ]
+          ],
         },
-        { 
-          title: "Satwa Mati", 
+        {
+          title: "Satwa Mati",
           url: "/dead",
           allowedRoles: [
             ROLE_CODES.ANIMAL_REGISTER,
@@ -150,11 +139,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             ROLE_CODES.MANAGER,
             ROLE_CODES.SUPER_ADMIN,
             ROLE_CODES.VIEW,
-          ]
+          ],
         },
       ],
     },
-    
+
     // ==================== KANDANG ====================
     {
       title: "Kandang",
@@ -171,7 +160,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         ROLE_CODES.VIEW,
       ],
     },
-    
+
     // ==================== PAKAN ====================
     {
       title: "Pakan",
@@ -189,7 +178,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         ROLE_CODES.VIEW,
       ],
     },
-    
+
     // ==================== TUGAS KEEPER ====================
     {
       title: "Tugas Keeper",
@@ -206,7 +195,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         ROLE_CODES.VIEW,
       ],
     },
-    
+
     // ==================== INVENTARIS ====================
     {
       title: "Stok Barang",
@@ -221,16 +210,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         ROLE_CODES.VIEW,
       ],
     },
-    
+
     // ==================== MASTER DATA ====================
     {
       title: "Master Data",
       url: "#",
       icon: IconLayoutDashboard,
       items: [
-        { 
-          title: "Area Unit", 
-          url: "/unit-area",
+        {
+          title: "Area Unit",
+          url: "/master-data/unit-area",
           allowedRoles: [
             ROLE_CODES.ANIMAL_REGISTER,
             ROLE_CODES.DIRECTOR_OPS,
@@ -241,11 +230,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             ROLE_CODES.MANAGER,
             ROLE_CODES.SUPER_ADMIN,
             ROLE_CODES.VIEW,
-          ]
+          ],
         },
-        { 
-          title: "Area Zona", 
-          url: "/zone-area",
+        {
+          title: "Area Zona",
+          url: "/master-data/zone-area",
           allowedRoles: [
             ROLE_CODES.ANIMAL_REGISTER,
             ROLE_CODES.DIRECTOR_OPS,
@@ -256,11 +245,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             ROLE_CODES.MANAGER,
             ROLE_CODES.SUPER_ADMIN,
             ROLE_CODES.VIEW,
-          ]
+          ],
         },
-        { 
-          title: "Family", 
-          url: "/family",
+        {
+          title: "Family",
+          url: "/master-data/family",
           allowedRoles: [
             ROLE_CODES.ANIMAL_REGISTER,
             ROLE_CODES.DIRECTOR_OPS,
@@ -271,11 +260,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             ROLE_CODES.MANAGER,
             ROLE_CODES.SUPER_ADMIN,
             ROLE_CODES.VIEW,
-          ]
+          ],
         },
-        { 
-          title: "Kategori Pakan", 
-          url: "/feed-category",
+        {
+          title: "Kategori Pakan",
+          url: "/master-data/feed-category",
           allowedRoles: [
             ROLE_CODES.ANIMAL_REGISTER,
             ROLE_CODES.DIRECTOR_OPS,
@@ -286,11 +275,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             ROLE_CODES.MANAGER,
             ROLE_CODES.SUPER_ADMIN,
             ROLE_CODES.VIEW,
-          ]
+          ],
         },
-        { 
-          title: "Jenis Kandang", 
-          url: "/cage-model",
+        {
+          title: "Jenis Kandang",
+          url: "/master-data/cage-model",
           allowedRoles: [
             ROLE_CODES.ANIMAL_REGISTER,
             ROLE_CODES.DIRECTOR_OPS,
@@ -301,11 +290,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             ROLE_CODES.MANAGER,
             ROLE_CODES.SUPER_ADMIN,
             ROLE_CODES.VIEW,
-          ]
+          ],
         },
-        { 
-          title: "Tipe Kandang", 
-          url: "/cage-type",
+        {
+          title: "Tipe Kandang",
+          url: "/master-data/cage-type",
           allowedRoles: [
             ROLE_CODES.ANIMAL_REGISTER,
             ROLE_CODES.DIRECTOR_OPS,
@@ -316,11 +305,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             ROLE_CODES.MANAGER,
             ROLE_CODES.SUPER_ADMIN,
             ROLE_CODES.VIEW,
-          ]
+          ],
         },
-        { 
-          title: "Jenis Pakan", 
-          url: "/feed-type",
+        {
+          title: "Jenis Pakan",
+          url: "/master-data/feed-type",
           allowedRoles: [
             ROLE_CODES.ANIMAL_REGISTER,
             ROLE_CODES.DIRECTOR_OPS,
@@ -331,11 +320,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             ROLE_CODES.MANAGER,
             ROLE_CODES.SUPER_ADMIN,
             ROLE_CODES.VIEW,
-          ]
+          ],
         },
-        { 
-          title: "Mix Pakan", 
-          url: "/mix-feed",
+        {
+          title: "Mix Pakan",
+          url: "/master-data/mix-feed",
           allowedRoles: [
             ROLE_CODES.ANIMAL_REGISTER,
             ROLE_CODES.DIRECTOR_OPS,
@@ -346,11 +335,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             ROLE_CODES.MANAGER,
             ROLE_CODES.SUPER_ADMIN,
             ROLE_CODES.VIEW,
-          ]
+          ],
         },
-        { 
-          title: "Spesies", 
-          url: "/species",
+        {
+          title: "Spesies",
+          url: "/master-data/species",
           allowedRoles: [
             ROLE_CODES.ANIMAL_REGISTER,
             ROLE_CODES.DIRECTOR_OPS,
@@ -361,11 +350,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             ROLE_CODES.MANAGER,
             ROLE_CODES.SUPER_ADMIN,
             ROLE_CODES.VIEW,
-          ]
+          ],
         },
-        { 
-          title: "Satuan", 
-          url: "/unit",
+        {
+          title: "Satuan",
+          url: "/master-data/unit",
           allowedRoles: [
             ROLE_CODES.ANIMAL_REGISTER,
             ROLE_CODES.DIRECTOR_OPS,
@@ -376,11 +365,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             ROLE_CODES.MANAGER,
             ROLE_CODES.SUPER_ADMIN,
             ROLE_CODES.VIEW,
-          ]
+          ],
         },
       ],
     },
-  ]
+  ];
 
   // Filter menu berdasarkan permission user
   const filterMenuByPermission = (menuItems: MenuItem[]): MenuItem[] => {
@@ -391,40 +380,40 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           const filteredChildren = menu.items.filter((child) => {
             // Jika tidak ada allowedRoles, berarti semua bisa akses
             if (!child.allowedRoles || child.allowedRoles.length === 0) {
-              return true
+              return true;
             }
-            return canAccessMenu(child.url)
-          })
+            return canAccessMenu(child.url);
+          });
 
           // Jika setelah filter tidak ada children yang tersisa, hide parent
           if (filteredChildren.length === 0) {
-            return null
+            return null;
           }
 
           return {
             ...menu,
             items: filteredChildren,
-          }
+          };
         }
 
         // Menu tanpa children
         if (!menu.allowedRoles || menu.allowedRoles.length === 0) {
-          return menu
+          return menu;
         }
 
-        return canAccessMenu(menu.url) ? menu : null
+        return canAccessMenu(menu.url) ? menu : null;
       })
-      .filter((menu): menu is MenuItem => menu !== null)
-  }
+      .filter((menu): menu is MenuItem => menu !== null);
+  };
 
-  const navMainData = filterMenuByPermission(allNavMainData)
+  const navMainData = filterMenuByPermission(allNavMainData);
 
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
         <TeamSwitcher teams={teamsData} />
       </SidebarHeader>
-      
+
       <SidebarContent>
         {/* Menu Utama */}
         <NavMain items={navMainData} />
@@ -432,13 +421,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
       <SidebarFooter>
         {/* Pass data user dari Zustand Store */}
-        <NavUser user={{
+        <NavUser
+          user={{
             name: user?.name || "Guest",
             email: user?.email || "guest@zoo.com",
-            avatar: ""
-        }} />
+            avatar: "",
+          }}
+        />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
-  )
+  );
 }

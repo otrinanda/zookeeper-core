@@ -6,7 +6,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
-import Link from "next/link";
 
 // Services & Types
 import { animalService, AnimalFullDetail } from "@/services/animal.service";
@@ -122,7 +121,7 @@ export function AnimalForm({
       toast.success("Data berhasil disimpan");
       router.push("/dashboard/animal");
     },
-    onError: (err: any) => toast.error(err.message || "Gagal menyimpan"),
+    onError: (err: Error) => toast.error(err.message || "Gagal menyimpan"),
   });
 
   if (options.isLoading) return <div>Loading master data...</div>;
@@ -253,7 +252,7 @@ export function AnimalForm({
                       type="number"
                     />
                   </div>
-                  <div className="w-[100px]">
+                  <div className="w-25">
                     <FormSelect
                       control={form.control}
                       name="weight_unit_id"
@@ -274,7 +273,7 @@ export function AnimalForm({
                       type="number"
                     />
                   </div>
-                  <div className="w-[100px]">
+                  <div className="w-25">
                     <FormSelect
                       control={form.control}
                       name="unit_id"

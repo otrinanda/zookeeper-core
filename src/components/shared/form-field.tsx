@@ -28,6 +28,7 @@ interface BaseProps<T extends FieldValues> {
   placeholder?: string;
   disabled?: boolean;
   required?: boolean;
+  rows?: number;
 }
 
 // --- 1. REUSABLE INPUT (Text, Number, Date, File) ---
@@ -37,7 +38,15 @@ interface FormInputProps<T extends FieldValues> extends BaseProps<T> {
 }
 
 export function FormInput<T extends FieldValues>({
-  control, name, label, type = "text", description, placeholder, disabled, required, onChange
+  control,
+  name,
+  label,
+  type = "text",
+  description,
+  placeholder,
+  disabled,
+  required,
+  onChange,
 }: FormInputProps<T>) {
   return (
     <FormField
@@ -49,11 +58,11 @@ export function FormInput<T extends FieldValues>({
             {label} {required && <span className="text-red-500">*</span>}
           </FormLabel>
           <FormControl>
-            <Input 
-              {...field} 
-              type={type} 
-              placeholder={placeholder} 
-              disabled={disabled} 
+            <Input
+              {...field}
+              type={type}
+              placeholder={placeholder}
+              disabled={disabled}
               // Jika ada custom onChange (misal file upload), pakai itu. Jika tidak, pakai bawaan field.
               onChange={onChange ? onChange : field.onChange}
               value={type === "file" ? undefined : field.value} // Fix error file input value
@@ -75,9 +84,16 @@ interface FormSelectProps<T extends FieldValues> extends BaseProps<T> {
 }
 
 export function FormSelect<T extends FieldValues>({
-  control, name, label, options, placeholder, disabled, required, description,
-  labelKey = "name", 
-  valueKey = "id"
+  control,
+  name,
+  label,
+  options,
+  placeholder,
+  disabled,
+  required,
+  description,
+  labelKey = "name",
+  valueKey = "id",
 }: FormSelectProps<T>) {
   return (
     <FormField
@@ -88,9 +104,9 @@ export function FormSelect<T extends FieldValues>({
           <FormLabel>
             {label} {required && <span className="text-red-500">*</span>}
           </FormLabel>
-          <Select 
-            onValueChange={field.onChange} 
-            defaultValue={field.value?.toString()} 
+          <Select
+            onValueChange={field.onChange}
+            defaultValue={field.value?.toString()}
             disabled={disabled}
           >
             <FormControl>
@@ -100,8 +116,14 @@ export function FormSelect<T extends FieldValues>({
             </FormControl>
             <SelectContent>
               {options?.map((item) => (
-                <SelectItem key={String(item[valueKey])} value={String(item[valueKey])}>
-                  {item[labelKey] || item["family_name"] || item["species_name"] || item["unit_name"]}
+                <SelectItem
+                  key={String(item[valueKey])}
+                  value={String(item[valueKey])}
+                >
+                  {item[labelKey] ||
+                    item["family_name"] ||
+                    item["species_name"] ||
+                    item["unit_name"]}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -116,7 +138,11 @@ export function FormSelect<T extends FieldValues>({
 
 // --- 3. REUSABLE TEXTAREA ---
 export function FormTextarea<T extends FieldValues>({
-  control, name, label, placeholder, disabled
+  control,
+  name,
+  label,
+  placeholder,
+  disabled,
 }: BaseProps<T>) {
   return (
     <FormField
@@ -126,10 +152,10 @@ export function FormTextarea<T extends FieldValues>({
         <FormItem>
           <FormLabel>{label}</FormLabel>
           <FormControl>
-            <Textarea 
-              placeholder={placeholder} 
-              className="min-h-[100px]" 
-              {...field} 
+            <Textarea
+              placeholder={placeholder}
+              className="min-h-25"
+              {...field}
               disabled={disabled}
             />
           </FormControl>
