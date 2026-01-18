@@ -201,6 +201,8 @@ export default function FamilyDetailPage({
             totalPages={meta ? Math.ceil(meta.total / limit) : 1}
             onPageChange={handlePageChange}
             isLoading={isLoading}
+            itemsPerPage={limit}
+            totalItems={meta?.total || 0}
           />
         </div>
       </div>

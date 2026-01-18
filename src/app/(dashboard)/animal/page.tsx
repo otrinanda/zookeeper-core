@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import { IconPlus, IconSearch } from "@tabler/icons-react";
 import Link from "next/link";
 import { Can } from "@/components/shared/can";
@@ -98,12 +99,12 @@ function AnimalPageContent() {
         </div>
       </div>
 
-      <div className="flex items-center justify-between gap-2">
-        <div className="relative ">
+      <div className="flex items-center justify-between gap-4 flex-wrap">
+        <div className="relative flex-1 min-w-64">
           <IconSearch className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Cari family, spesies..."
-            className="pl-9 w-100"
+            className="pl-9"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             // Eksekusi search saat Enter ditekan
@@ -152,21 +153,27 @@ function AnimalPageContent() {
           </TableHeader>
           <TableBody>
             {isLoading ? (
-              <TableRow>
-                <TableCell
-                  colSpan={FamilyTableColumns.length}
-                  className="h-24 text-center"
-                >
-                  Memuat data...
-                </TableCell>
-              </TableRow>
+              Array.from({ length: 5 }).map((_, i) => (
+                <TableRow key={i}>
+                  {FamilyTableColumns.map((_, j) => (
+                    <TableCell key={j}>
+                      <Skeleton className="h-4 w-full" />
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
             ) : tableData.length === 0 ? (
               <TableRow>
                 <TableCell
                   colSpan={FamilyTableColumns.length}
-                  className="h-24 text-center"
+                  className="h-32 text-center"
                 >
-                  Tidak ada data ditemukan.
+                  <div className="flex flex-col items-center justify-center gap-2">
+                    <IconSearch className="h-8 w-8 text-muted-foreground/50" />
+                    <p className="text-muted-foreground">
+                      Tidak ada data ditemukan
+                    </p>
+                  </div>
                 </TableCell>
               </TableRow>
             ) : (
@@ -211,6 +218,8 @@ function AnimalPageContent() {
             totalPages={meta ? Math.ceil(meta.total / limit) : 1}
             onPageChange={handlePageChange}
             isLoading={isLoading}
+            itemsPerPage={limit}
+            totalItems={meta?.total || 0}
           />
         </div>
       </div>

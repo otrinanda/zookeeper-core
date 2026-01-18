@@ -15,6 +15,8 @@ interface PaginationControlProps {
   totalPages: number;
   onPageChange: (page: number) => void;
   isLoading?: boolean;
+  itemsPerPage?: number;
+  totalItems?: number;
 }
 
 export function PaginationControl({
@@ -22,9 +24,13 @@ export function PaginationControl({
   totalPages,
   onPageChange,
   isLoading,
+  itemsPerPage = 20,
+  totalItems = 0,
 }: PaginationControlProps) {
-  // Jangan render jika halaman <= 1
-//   if (totalPages <= 1) return null;
+  // Hitung item range untuk teks info
+  const startItem = (currentPage - 1) * itemsPerPage + 1;
+  const endItem = Math.min(currentPage * itemsPerPage, totalItems);
+  const hasItems = totalItems > 0;
 
   // Fungsi helper untuk menghandle klik (mencegah refresh jika pakai href #)
   const handlePageChange = (page: number, e: React.MouseEvent) => {
@@ -45,7 +51,7 @@ export function PaginationControl({
       for (let i = 1; i <= totalPages; i++) {
         pages.push(i);
       }
-    } 
+    }
     // Kasus 2: Halaman banyak
     else {
       // Selalu tampilkan halaman 1
@@ -101,29 +107,47 @@ export function PaginationControl({
   };
 
   return (
-    <Pagination className="justify-end my-4"> 
-      <PaginationContent>
-        {/* Tombol Previous */}
-        <PaginationItem>
-          <PaginationPrevious 
-            href="#"
-            onClick={(e) => handlePageChange(currentPage - 1, e)}
-            className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
-          />
-        </PaginationItem>
+    <div className="flex items-center justify-between gap-4 w-full">
+      {/* Info Text */}
+      {hasItems && (
+        <div className="text-sm text-muted-foreground w-80">
+          Menampilkan {startItem}-{endItem} dari {totalItems} data
+        </div>
+      )}
 
-        {/* Angka Halaman */}
-        {renderPageNumbers()}
+      {/* Pagination */}
+      <Pagination className="justify-end my-0">
+        <PaginationContent>
+          {/* Tombol Previous */}
+          <PaginationItem>
+            <PaginationPrevious
+              href="#"
+              onClick={(e) => handlePageChange(currentPage - 1, e)}
+              className={
+                currentPage === 1
+                  ? "pointer-events-none opacity-50"
+                  : "cursor-pointer"
+              }
+            />
+          </PaginationItem>
 
-        {/* Tombol Next */}
-        <PaginationItem>
-          <PaginationNext 
-            href="#" 
-            onClick={(e) => handlePageChange(currentPage + 1, e)}
-            className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
-          />
-        </PaginationItem>
-      </PaginationContent>
-    </Pagination>
+          {/* Angka Halaman */}
+          {renderPageNumbers()}
+
+          {/* Tombol Next */}
+          <PaginationItem>
+            <PaginationNext
+              href="#"
+              onClick={(e) => handlePageChange(currentPage + 1, e)}
+              className={
+                currentPage === totalPages
+                  ? "pointer-events-none opacity-50"
+                  : "cursor-pointer"
+              }
+            />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
+    </div>
   );
 }
