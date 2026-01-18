@@ -10,6 +10,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -18,6 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { IconMinus, IconPlus } from "@tabler/icons-react";
 
 // --- TIPE DATA ---
 interface BaseProps<T extends FieldValues> {
@@ -76,14 +78,134 @@ export function FormInput<T extends FieldValues>({
   );
 }
 
-// --- 2. REUSABLE SELECT (Smart Dropdown) ---
-interface FormSelectProps<T extends FieldValues> extends BaseProps<T> {
+// --- 2. REUSABLE NUMBER INPUT ---
+interface FormNumberProps<T extends FieldValues = FieldValues> {
+  control: Control<T>;
+  name: Path<T>;
+  label: string;
+  description?: string;
+  placeholder?: string;
+  disabled?: boolean;
+  required?: boolean;
+  step?: string | number;
+  min?: string | number;
+  max?: string | number;
+  withButtons?: boolean; // Show increment/decrement buttons
+}
+
+export function FormNumber<T extends FieldValues = FieldValues>({
+  control,
+  name,
+  label,
+  description,
+  placeholder,
+  disabled,
+  required,
+  step = 1,
+  min,
+  max,
+  withButtons = false,
+}: FormNumberProps<T>) {
+  return (
+    <FormField
+      control={control}
+      name={name}
+      render={({ field }) => {
+        const handleIncrement = () => {
+          const currentValue = parseFloat(field.value) || 0;
+          field.onChange(currentValue + (parseFloat(step as string) || 1));
+        };
+
+        const handleDecrement = () => {
+          const currentValue = parseFloat(field.value) || 0;
+          const newValue = currentValue - (parseFloat(step as string) || 1);
+          if (newValue >= 0) {
+            field.onChange(newValue);
+          }
+        };
+
+        return (
+          <FormItem>
+            <FormLabel>
+              {label} {required && <span className="text-red-500">*</span>}
+            </FormLabel>
+            {withButtons ? (
+              <div className="flex items-center gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleDecrement}
+                  disabled={disabled}
+                >
+                  <IconMinus size={16} />
+                </Button>
+                <FormControl>
+                  <Input
+                    {...field}
+                    type="number"
+                    placeholder={placeholder}
+                    disabled={disabled}
+                    step={step}
+                    min={min}
+                    max={max}
+                    onChange={(e) =>
+                      field.onChange(parseFloat(e.target.value) || 0)
+                    }
+                    value={field.value ?? ""}
+                  />
+                </FormControl>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleIncrement}
+                  disabled={disabled}
+                >
+                  <IconPlus size={16} />
+                </Button>
+              </div>
+            ) : (
+              <FormControl>
+                <Input
+                  {...field}
+                  type="number"
+                  placeholder={placeholder}
+                  disabled={disabled}
+                  step={step}
+                  min={min}
+                  max={max}
+                  onChange={(e) =>
+                    field.onChange(parseFloat(e.target.value) || 0)
+                  }
+                  value={field.value ?? ""}
+                />
+              </FormControl>
+            )}
+            {description && <FormDescription>{description}</FormDescription>}
+            <FormMessage />
+          </FormItem>
+        );
+      }}
+    />
+  );
+}
+
+// --- 3. REUSABLE SELECT (Smart Dropdown) ---
+interface FormSelectProps<T extends FieldValues = FieldValues> {
+  control: Control<T>;
+  name: Path<T>;
+  label: string;
+  description?: string;
+  placeholder?: string;
+  disabled?: boolean;
+  required?: boolean;
   options: any[]; // Data array
   labelKey?: string; // Key untuk label (default: 'name' atau 'family_name')
   valueKey?: string; // Key untuk value (default: 'id')
 }
 
-export function FormSelect<T extends FieldValues>({
+export function FormSelect<T extends FieldValues = FieldValues>({
   control,
   name,
   label,
@@ -106,7 +228,7 @@ export function FormSelect<T extends FieldValues>({
           </FormLabel>
           <Select
             onValueChange={field.onChange}
-            defaultValue={field.value?.toString()}
+            value={field.value?.toString() || ""}
             disabled={disabled}
           >
             <FormControl>
@@ -114,18 +236,35 @@ export function FormSelect<T extends FieldValues>({
                 <SelectValue placeholder={placeholder || "Pilih..."} />
               </SelectTrigger>
             </FormControl>
-            <SelectContent>
-              {options?.map((item) => (
-                <SelectItem
-                  key={String(item[valueKey])}
-                  value={String(item[valueKey])}
-                >
-                  {item[labelKey] ||
-                    item["family_name"] ||
-                    item["species_name"] ||
-                    item["unit_name"]}
-                </SelectItem>
-              ))}
+            <SelectContent position="popper">
+              {(() => {
+                const filteredOptions = options?.filter(
+                  (item) =>
+                    item &&
+                    item[valueKey] !== undefined &&
+                    item[valueKey] !== null,
+                );
+
+                if (!filteredOptions || filteredOptions.length === 0) {
+                  return (
+                    <div className="py-6 text-center text-sm text-muted-foreground">
+                      Data tidak ditemukan
+                    </div>
+                  );
+                }
+
+                return filteredOptions.map((item, index) => (
+                  <SelectItem
+                    key={`${valueKey}-${item[valueKey]}-${index}`}
+                    value={String(item[valueKey])}
+                  >
+                    {item[labelKey] ||
+                      item["family_name"] ||
+                      item["species_name"] ||
+                      item["unit_name"]}
+                  </SelectItem>
+                ));
+              })()}
             </SelectContent>
           </Select>
           {description && <FormDescription>{description}</FormDescription>}
@@ -136,7 +275,7 @@ export function FormSelect<T extends FieldValues>({
   );
 }
 
-// --- 3. REUSABLE TEXTAREA ---
+// --- 4. REUSABLE TEXTAREA ---
 export function FormTextarea<T extends FieldValues>({
   control,
   name,
